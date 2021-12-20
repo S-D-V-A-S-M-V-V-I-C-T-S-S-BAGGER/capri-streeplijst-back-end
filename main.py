@@ -1,6 +1,7 @@
 import os
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 import sqlite3
 from sqlite3 import Connection
@@ -8,6 +9,13 @@ from sqlite3 import Connection
 from pydantic import BaseModel, Field
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['http://localhost:3000', 'http://streep.capri', 'https://streep.capri'],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 
 def get_db() -> Connection:
@@ -47,7 +55,7 @@ async def persons():
     con = get_db()
     cursor = con.cursor()
 
-    res = cursor.execute('SELECT DISTINCT what FROM ledger').fetchall()
+    res = cursor.execute('SELECT what FROM ledger').fetchall()
 
     con.close()
     return [item[0] for item in res]
