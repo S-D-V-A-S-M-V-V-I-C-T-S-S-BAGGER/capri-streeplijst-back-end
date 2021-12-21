@@ -11,7 +11,13 @@ from pydantic import BaseModel, Field
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['http://localhost:3000', 'http://streep.capri', 'https://streep.capri'],
+    allow_origins=[
+        'http://localhost:3000',
+        'http://192.168.1.92:3000',
+        'http://streep.capri',
+        'https://streep.capri',
+        'https://capri.imabot.nl'
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
@@ -44,7 +50,7 @@ async def persons():
     con = get_db()
     cursor = con.cursor()
 
-    res = cursor.execute('SELECT DISTINCT who FROM ledger').fetchall()
+    res = cursor.execute('SELECT DISTINCT who FROM ledger GROUP BY who').fetchall()
 
     con.close()
     return [person[0] for person in res]
@@ -55,7 +61,7 @@ async def persons():
     con = get_db()
     cursor = con.cursor()
 
-    res = cursor.execute('SELECT what FROM ledger').fetchall()
+    res = cursor.execute('SELECT what FROM ledger GROUP BY what').fetchall()
 
     con.close()
     return [item[0] for item in res]
